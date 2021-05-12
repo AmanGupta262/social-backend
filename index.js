@@ -9,6 +9,7 @@ const passport = require('passport');
 const JWTStrategy = require('./config/passport-jwt-strategy');
 const googleStrategy = require('./config/passport-google-oauth2-strategy');
 const githubStrategy = require('./config/passport-github-strategy');
+const facebookStrategy = require('./config/passport-facebook-strategy');
 
 
 app.use(express.urlencoded({extended: false}));
