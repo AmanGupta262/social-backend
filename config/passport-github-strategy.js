@@ -1,16 +1,17 @@
 const passport = require('passport');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
-const googleStrategy = require('passport-google-oauth20').Strategy;
+const githubStrategy = require('passport-github2').Strategy;
 require('dotenv').config();
 
 const User = require('../models/user');
 
-passport.use(new googleStrategy({
-    clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_OAUTH_CALLBACK_URL
-},
+passport.use(new githubStrategy(
+    {
+        clientID: process.env.GITHUB_OAUTH_CLIENT_ID,
+        clientSecret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
+        callbackURL: process.env.GITHUB_OAUTH_CALLBACK_URL
+    },
     async function (accessToken, refreshToken, profile, done) {
         try {
             const user = await User.findOne({ email: profile.emails[0].value });
@@ -20,7 +21,7 @@ passport.use(new googleStrategy({
                 return done(null, user);
             }
             let password = crypto.randomBytes(20).toString("hex");
-            password = await bcrypt.hash(password, 10); 
+            password = await bcrypt.hash(password, 10);
 
             const newUser = await User.create({
                 name: profile.displayName,
@@ -36,22 +37,8 @@ passport.use(new googleStrategy({
                 error
             });
         }
-    }
-));
+    })
+);
 
-passport.serializeUser((user, done) => {
-    return done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-    User.findById(id, (err, user) => {
-        if (err) {
-            console.log("Error in finding user in passport");
-            return done(err);
-        }
-        return done(null, user);
-    });
-
-});
 
 module.exports = passport;

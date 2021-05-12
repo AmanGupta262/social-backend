@@ -8,6 +8,7 @@ const db = require('./config/mongoose');
 const passport = require('passport');
 const JWTStrategy = require('./config/passport-jwt-strategy');
 const googleStrategy = require('./config/passport-google-oauth2-strategy');
+const githubStrategy = require('./config/passport-github-strategy');
 
 
 app.use(express.urlencoded({extended: false}));
