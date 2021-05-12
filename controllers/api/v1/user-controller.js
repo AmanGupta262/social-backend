@@ -60,3 +60,13 @@ module.exports.login = async (req, res) => {
         });
     }
 };
+
+module.exports.createSession = async (req, res) => {
+
+    return res.status(200).json({
+        message: "Login Successful",
+        data: {
+            token: "Bearer " + jwt.sign(req.user.toJSON(), 'secret', { expiresIn: '1d' })
+        }
+    });
+};
