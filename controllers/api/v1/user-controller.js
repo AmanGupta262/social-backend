@@ -32,3 +32,31 @@ module.exports.register = async (req, res) => {
         });
     }
 };
+
+module.exports.login = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        const user = await User.findOne({email: email});
+
+        const isValidPassword = await bcrypt.compare(password, user.password);
+
+        if(!user || !isValidPassword){
+            return res.status(401).json({
+                message: "Invalid Username / Password"
+            });
+        }
+
+        return res.status(200).json({
+            message: "Login Successful",
+            data: {
+                token: "Bearer " + jwt.sign(user.toJSON(), 'secret', {expiresIn: '1d'})
+            }
+        });
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+};
