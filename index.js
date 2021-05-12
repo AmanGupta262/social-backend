@@ -6,9 +6,10 @@ const app = express();
 const db = require('./config/mongoose');
 
 const passport = require('passport');
+const JWTStrategy = require('./config/passport-jwt-strategy');
 
 
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
 
