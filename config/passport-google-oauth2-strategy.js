@@ -39,19 +39,3 @@ passport.use(new googleStrategy({
     }
 ));
 
-passport.serializeUser((user, done) => {
-    return done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-    User.findById(id, (err, user) => {
-        if (err) {
-            console.log("Error in finding user in passport");
-            return done(err);
-        }
-        return done(null, user);
-    });
-
-});
-
-module.exports = passport;
