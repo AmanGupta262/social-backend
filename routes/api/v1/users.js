@@ -16,6 +16,6 @@ router.get('/auth/github/callback', passport.authenticate('github'), userControl
 router.get('/auth/facebook', passport.authenticate('facebook', { session: false }));
 router.get('/auth/facebook/callback', passport.authenticate('facebook'), userController.createSession);
 
-router.get('/:id/posts', passport.authenticate('jwt', {sesstion: false}), userController.getAllPosts);
+router.get('/:id/posts', userController.getAllPosts);
 
 module.exports = router;
