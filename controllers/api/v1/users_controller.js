@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 const User = require('../../../models/user');
 const Post = require('../../../models/post');
+const Article = require('../../../models/article');
 
 module.exports.register = async (req, res) => {
     try {
@@ -82,7 +83,7 @@ module.exports.createSession = async (req, res) => {
     });
 };
 
-module.exports.getAllPosts = async (req, res) => {
+module.exports.getPosts = async (req, res) => {
     try {
         const {id} = req.params;
 
@@ -100,6 +101,35 @@ module.exports.getAllPosts = async (req, res) => {
             message: "All Posts",
             data: {
                 posts
+            }
+        });
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+};
+
+module.exports.getArticles = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User does not exists"
+            });
+        }
+
+        const articles = await Article.find({ user: id });
+
+        return res.status(200).json({
+            message: "All Articles",
+            data: {
+                articles
             }
         });
     } catch (error) {
