@@ -3,7 +3,7 @@ const User = require('../../../models/user');
 
 module.exports.create = async (req, res) => {
     try {
-        const user = await req.user;
+        const user = req.user;
         req.body.user = user._id;
 
         const post = await Post.create(req.body);
