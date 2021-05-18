@@ -1,6 +1,25 @@
 const Post = require('../../../models/post');
 const User = require('../../../models/user');
 
+module.exports.getAllPosts = async (req, res) => {
+    try {
+        const posts = await Post.find();
+        res.status(200).json({
+            message: "All Posts",
+            data: {
+                posts
+            }
+        });
+        
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}
+
 module.exports.create = async (req, res) => {
     try {
         const user = req.user;
