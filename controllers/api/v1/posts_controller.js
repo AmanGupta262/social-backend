@@ -3,7 +3,7 @@ const User = require('../../../models/user');
 
 module.exports.getAllPosts = async (req, res) => {
     try {
-        const posts = await Post.find();
+        const posts = await Post.find().populate({path: 'likes', select: 'name email'});
         res.status(200).json({
             message: "All Posts",
             data: {
