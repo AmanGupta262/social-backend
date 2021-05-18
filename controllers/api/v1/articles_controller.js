@@ -62,3 +62,44 @@ module.exports.toggleUpvote = async (req, res) => {
         });
     }
 }
+module.exports.toggleDownvote = async (req, res) => {
+    try {
+        const article = await Article.findById(req.params.id);
+
+        if (!article)
+            return res.status(404).json({
+                message: "Article not found",
+            });
+        const user = req.user;
+
+        const isUpvoted = article.upvotes.indexOf(user._id) > -1 ? true : false;
+        
+        if (isUpvoted) {
+            article.upvotes.pull(user._id);
+        }
+        
+        const isDownVoted = article.downvotes.indexOf(user._id) > -1 ? true : false;
+        if (!isDownVoted) {
+            article.downvotes.push(user._id);
+        }
+        else {
+            article.downvotes.pull(user._id);
+        }
+        await article.save();
+
+        return res.status(200).json({
+            message: isDownVoted ? "voted Article" : "Downvoted Article",
+            data: {
+                article,
+                downboted: !isDownVoted
+            }
+        });
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}
