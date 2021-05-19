@@ -4,7 +4,7 @@ const User = require('../../../models/user');
 module.exports.getAllPosts = async (req, res) => {
     try {
         const posts = await Post.find().populate({
-            path: 'likes', 
+            path: 'likes',
             select: 'name'
         });
         res.status(200).json({
@@ -13,7 +13,7 @@ module.exports.getAllPosts = async (req, res) => {
                 posts
             }
         });
-        
+
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
@@ -47,18 +47,18 @@ module.exports.create = async (req, res) => {
 module.exports.toggleLike = async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
-        
-        if(!post)
+
+        if (!post)
             return res.status(404).json({
                 message: "Post not found",
             });
         const user = req.user;
-        const isPresent = post.likes.indexOf(user._id) > -1 ? true: false;
+        const isPresent = post.likes.indexOf(user._id) > -1 ? true : false;
 
-        if(!isPresent){
+        if (!isPresent) {
             post.likes.push(user._id);
         }
-        else{
+        else {
             post.likes.pull(user._id);
         }
         await post.save();
@@ -70,7 +70,7 @@ module.exports.toggleLike = async (req, res) => {
                 liked: !isPresent
             }
         });
-        
+
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
