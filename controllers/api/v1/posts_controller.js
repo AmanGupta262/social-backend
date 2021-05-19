@@ -91,3 +91,33 @@ module.exports.toggleLike = async (req, res) => {
         });
     }
 }
+module.exports.showPost = async (req, res) => {
+    try {
+        const post = await Post.findOne({_id: req.params.id})
+            .populate({
+                path: 'likes',
+                select: 'name'
+            })
+            .populate({
+                path: 'comments',
+                select: 'content user createdAt',
+                populate: {
+                    path: 'user',
+                    select: 'name'
+                }
+            });
+        res.status(200).json({
+            message: "Post Detail",
+            data: {
+                post
+            }
+        });
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}
