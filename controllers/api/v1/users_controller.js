@@ -85,7 +85,7 @@ module.exports.createSession = async (req, res) => {
 
 module.exports.getPosts = async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
 
         const user = await User.findById(id);
 
@@ -94,8 +94,8 @@ module.exports.getPosts = async (req, res) => {
                 message: "User does not exists"
             });
         }
-        
-        const posts = await Post.find({user: id});
+
+        const posts = await Post.find({ user: id });
 
         return res.status(200).json({
             message: "All Posts",
@@ -132,6 +132,39 @@ module.exports.getArticles = async (req, res) => {
                 articles
             }
         });
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+};
+
+module.exports.profile = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.params.id }).select('-password');
+
+        if (!user)
+            return res.status(404).json({
+                message: 'User not found'
+            });
+
+        const owner = req.user.id === user.id;
+        const posts = await Post.find({ user: user._id })
+                                .populate({ path: 'likes', select: 'name' })
+                                .limit(5)
+                                .sort({ 'createdAt': 'desc' });
+
+        return res.status(200).json({
+            message: 'User Profile',
+            data: {
+                user,
+                posts,
+                owner
+            }
+        });
+
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({

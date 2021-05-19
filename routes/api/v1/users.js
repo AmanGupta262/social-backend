@@ -19,4 +19,6 @@ router.get('/auth/facebook/callback', passport.authenticate('facebook'), userCon
 router.get('/:id/posts', userController.getPosts);
 router.get('/:id/articles', passport.authenticate('jwt', {session: false}), userController.getArticles);
 
+router.get('/:id', passport.authenticate('jwt', { session: false }), userController.profile);
+
 module.exports = router;
