@@ -17,6 +17,9 @@ module.exports.create = async (req, res) => {
             post: req.body.post
         });
 
+        post.comments.push(comment);
+        await post.save();
+
         return res.status(200).json({
             message: "Comment added successfully",
             data: {
