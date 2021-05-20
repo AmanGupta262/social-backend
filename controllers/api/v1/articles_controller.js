@@ -183,3 +183,28 @@ module.exports.update = async (req, res) => {
         });
     }
 }
+module.exports.delete = async (req, res) => {
+    try {
+        const article = await Article.findById(req.params.id);
+        if (!article)
+            return res.status(404).json({
+                message: "Article not found"
+            });
+        if (req.user.id != article.user)
+            return res.status(403).json({
+                message: "You can delete only your articles"
+            });
+        await article.deleteOne();
+
+        return res.status(200).json({
+            message: "Article deleted"
+        });
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}

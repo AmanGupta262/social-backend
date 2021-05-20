@@ -10,5 +10,6 @@ router.post('/:id/upvote', passport.authenticate('jwt', { session: false }), art
 router.post('/:id/downvote', passport.authenticate('jwt', { session: false }), articleController.toggleDownvote);
 router.get('/:id', passport.authenticate('jwt', { session: false }), articleController.showArticle);
 router.put('/:id/update', passport.authenticate('jwt', { session: false }), articleController.update);
+router.delete('/:id/delete', passport.authenticate('jwt', { session: false }), articleController.delete);
 
 module.exports = router;
