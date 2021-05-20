@@ -8,5 +8,6 @@ router.get('/', postController.getAllPosts);
 router.post('/create', passport.authenticate('jwt', { session: false }), postController.create);
 router.post('/:id/like', passport.authenticate('jwt', { session: false }), postController.toggleLike);
 router.get('/:id', passport.authenticate('jwt', { session: false }), postController.showPost);
+router.put('/:id/update', passport.authenticate('jwt', { session: false }), postController.update);
 
 module.exports = router;

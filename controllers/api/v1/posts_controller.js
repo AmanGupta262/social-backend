@@ -121,3 +121,28 @@ module.exports.showPost = async (req, res) => {
         });
     }
 }
+module.exports.update = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        if (!post)
+            return res.status(404).json({
+                message: "Post not found"
+            });
+        if (req.user.id != post.user)
+            return res.status(403).json({
+                message: "You can edit only your posts"
+            });
+        await post.updateOne({ $set: req.body });
+
+        return res.status(200).json({
+            message: "Post updated successfully"
+        });
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}
