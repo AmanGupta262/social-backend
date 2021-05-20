@@ -8,5 +8,6 @@ router.get('/', passport.authenticate('jwt', { session: false }), articleControl
 router.post('/create', passport.authenticate('jwt', { session: false }), articleController.create);
 router.post('/:id/upvote', passport.authenticate('jwt', { session: false }), articleController.toggleUpvote);
 router.post('/:id/downvote', passport.authenticate('jwt', { session: false }), articleController.toggleDownvote);
+router.get('/:id', passport.authenticate('jwt', { session: false }), articleController.showArticle);
 
 module.exports = router;

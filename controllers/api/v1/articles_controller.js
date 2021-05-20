@@ -129,3 +129,32 @@ module.exports.toggleDownvote = async (req, res) => {
         });
     }
 }
+module.exports.showArticle = async (req, res) => {
+    try {
+        const article = await Article.findOne({_id: req.params.id})
+            .populate({
+                path: 'upvotes',
+                select: 'name'
+            })
+            .populate({
+                path: 'downvotes',
+                select: 'name',
+            });
+
+        if(!article)
+            return res.status(404).json({
+                message: "Article not found"
+            });
+
+        return res.status(200).json({
+            article
+        });
+        
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}
