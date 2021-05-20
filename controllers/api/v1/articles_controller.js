@@ -1,6 +1,32 @@
 const Article = require('../../../models/article');
 const User = require('../../../models/user');
 
+module.exports.getAllArticles = async (req, res) => {
+    try {
+        const articles = await Article.find()
+            .populate({
+                path: 'upvotes',
+                select: 'name'
+            })
+            .populate({
+                path: 'downvotes',
+                select: 'name',
+            });
+        res.status(200).json({
+            message: "All Articles",
+            data: {
+                articles
+            }
+        });
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}
 module.exports.create = async (req, res) => {
     try {
         const user = req.user;
@@ -32,11 +58,11 @@ module.exports.toggleUpvote = async (req, res) => {
             });
         const user = req.user;
 
-        const isDownVoted = article.downvotes.indexOf(user._id) > -1 ? true : false;
+        const isDownVoted = article.downvotes.includes(user._id);
         if(isDownVoted){
             article.downvotes.pull(user._id);
         }
-        const isUpvoted = article.upvotes.indexOf(user._id) > -1 ? true : false;
+        const isUpvoted = article.upvotes.includes(user._id);
 
         if (!isUpvoted) {
             article.upvotes.push(user._id);
@@ -72,13 +98,13 @@ module.exports.toggleDownvote = async (req, res) => {
             });
         const user = req.user;
 
-        const isUpvoted = article.upvotes.indexOf(user._id) > -1 ? true : false;
+        const isUpvoted = article.upvotes.includes(user._id);
         
         if (isUpvoted) {
             article.upvotes.pull(user._id);
         }
         
-        const isDownVoted = article.downvotes.indexOf(user._id) > -1 ? true : false;
+        const isDownVoted = article.downvotes.includes(user._id);
         if (!isDownVoted) {
             article.downvotes.push(user._id);
         }

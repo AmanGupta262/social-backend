@@ -4,6 +4,7 @@ const router = express.Router();
 
 const articleController = require('../../../controllers/api/v1/articles_controller');
 
+router.get('/', passport.authenticate('jwt', { session: false }), articleController.getAllArticles);
 router.post('/create', passport.authenticate('jwt', { session: false }), articleController.create);
 router.post('/:id/upvote', passport.authenticate('jwt', { session: false }), articleController.toggleUpvote);
 router.post('/:id/downvote', passport.authenticate('jwt', { session: false }), articleController.toggleDownvote);
