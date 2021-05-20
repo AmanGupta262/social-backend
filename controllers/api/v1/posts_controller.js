@@ -1,5 +1,6 @@
 const Post = require('../../../models/post');
 const User = require('../../../models/user');
+const Comment = require('../../../models/comment');
 
 module.exports.getAllPosts = async (req, res) => {
     try {
@@ -155,8 +156,9 @@ module.exports.delete = async (req, res) => {
             });
         if (req.user.id != post.user)
             return res.status(403).json({
-                message: "You can edit only your posts"
+                message: "You can delete only your posts"
             });
+        let comments = await Comment.deleteMany({ post: req.params.id });
         await post.deleteOne();
 
         return res.status(200).json({
