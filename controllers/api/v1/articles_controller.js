@@ -158,3 +158,28 @@ module.exports.showArticle = async (req, res) => {
         });
     }
 }
+module.exports.update = async (req, res) => {
+    try {
+        const article = await Article.findById(req.params.id);
+        if(!article)
+            return res.status(404).json({
+                message: "Article not found"
+            });
+        if(req.user.id != article.user)
+            return res.status(403).json({
+                message: "You can edit only your articles"
+            });
+        await article.updateOne({$set: req.body});
+
+        return res.status(200).json({
+            message: "Article updated successfully"
+        });
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}
