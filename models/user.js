@@ -19,7 +19,13 @@ const userSchema = new mongoose.Schema({
         trim: true,
         minlength: 3,
         maxlength: 50
-    }
+    },
+    friends: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Friendship'
+        }
+    ]
 },{
     timestamps: true
 });
