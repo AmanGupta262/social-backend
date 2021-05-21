@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const User = require('../../../models/user');
 const Post = require('../../../models/post');
 const Article = require('../../../models/article');
+const Friendship = require('../../../models/friendship');
 
 module.exports.register = async (req, res) => {
     try {
@@ -143,7 +144,7 @@ module.exports.getArticles = async (req, res) => {
 
 module.exports.profile = async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.params.id }).select('-password');
+        const user = await User.findOne({ _id: req.params.id }).select('-password').populate('friends');
 
         if (!user)
             return res.status(404).json({
@@ -155,13 +156,17 @@ module.exports.profile = async (req, res) => {
                                 .populate({ path: 'likes', select: 'name' })
                                 .limit(5)
                                 .sort({ 'createdAt': 'desc' });
-
+        const requests = await Friendship.find({
+            to_user: user._id,
+            status: '0'
+        });
         return res.status(200).json({
             message: 'User Profile',
             data: {
                 user,
                 posts,
-                owner
+                owner,
+                requests
             }
         });
 
