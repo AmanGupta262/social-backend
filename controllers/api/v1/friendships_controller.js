@@ -37,3 +37,34 @@ module.exports.add = async (req, res) => {
         });
     }
 }
+
+module.exports.accept = async (req, res) => {
+    try {
+        const friendship = await Friendship.findOne({_id: req.params.id}).populate('from_user', 'name');
+        if(!friendship)
+            return res.status(404).json({
+                message: 'Friend request not found'
+            });
+            
+        if(req.user.id != friendship.to_user)
+            return res.status(403).json({
+                message: 'You are not authorized to accept this request'
+            });
+
+        friendship.status = '1';
+        await friendship.save();
+        
+
+        return res.status(200).json({
+            message: `${friendship.from_user.name} is your friend now`,
+            friendship
+        });
+        
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+};
