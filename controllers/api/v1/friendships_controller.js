@@ -68,3 +68,34 @@ module.exports.accept = async (req, res) => {
         });
     }
 };
+
+module.exports.reject = async (req, res) => {
+    try {
+        const friendship = await Friendship.findOne({ _id: req.params.id }).populate('from_user', 'name');
+        if (!friendship)
+            return res.status(404).json({
+                message: 'Friend request not found'
+            });
+
+        if (req.user.id != friendship.to_user)
+            return res.status(403).json({
+                message: 'You are not authorized to reject this request'
+            });
+
+        friendship.status = '2';
+        await friendship.save();
+
+
+        return res.status(200).json({
+            message: `You have rejected friend request of ${friendship.from_user.name}`,
+            friendship
+        });
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+};

@@ -6,5 +6,6 @@ const friendsController = require('../../../controllers/api/v1/friendships_contr
 
 router.post('/:id/add', passport.authenticate('jwt', { session: false }), friendsController.add);
 router.post('/:id/accept', passport.authenticate('jwt', { session: false }), friendsController.accept);
+router.post('/:id/reject', passport.authenticate('jwt', { session: false }), friendsController.reject);
 
 module.exports = router;
