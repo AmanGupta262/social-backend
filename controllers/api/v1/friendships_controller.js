@@ -45,7 +45,6 @@ module.exports.accept = async (req, res) => {
             return res.status(404).json({
                 message: 'Friend request not found'
             });
-            
         if(req.user.id != friendship.to_user)
             return res.status(403).json({
                 message: 'You are not authorized to accept this request'
@@ -69,7 +68,7 @@ module.exports.accept = async (req, res) => {
     }
 };
 
-module.exports.reject = async (req, res) => {
+module.exports.remove = async (req, res) => {
     try {
         const friendship = await Friendship.findOne({ _id: req.params.id }).populate('from_user', 'name');
         if (!friendship)
@@ -79,16 +78,17 @@ module.exports.reject = async (req, res) => {
 
         if (req.user.id != friendship.to_user)
             return res.status(403).json({
-                message: 'You are not authorized to reject this request'
+                message: 'You are not authorized to do this'
             });
+        const otherUsername = friendship.from_user.name;
+        await User.findByIdAndUpdate(friendship.to_user, { $pull: { friends: friendship.id } });
+        await User.findByIdAndUpdate(friendship.from_user, { $pull: { friends: friendship.id } });
 
-        friendship.status = '2';
-        await friendship.save();
-
-
+        await friendship.deleteOne();
+        
+        
         return res.status(200).json({
-            message: `You have rejected friend request of ${friendship.from_user.name}`,
-            friendship
+            message: `You are no longer friend with ${otherUsername}`
         });
 
     } catch (error) {
