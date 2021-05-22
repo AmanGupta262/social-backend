@@ -34,3 +34,31 @@ module.exports.create = async (req, res) => {
         });
     }
 };
+module.exports.delete = async (req, res) => {
+    try {
+        const comment = await Comment.findById(req.params.id).populate('post');
+
+        if (!comment) {
+            return res.status(404).json({
+                message: "Comment not found"
+            });
+        }
+
+        if(req.user.id != comment.user || req.user.id != comment.post.user)
+            return res.status(403).json({
+                message: 'You are not authorized to delete this comment'
+            });
+        await Post.findByIdAndUpdate(comment.post, {$pull: {comments: comment.id}});
+        await comment.deleteOne();
+
+        return res.status(200).json({
+            message: "Comment deleted",
+        });
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+};
