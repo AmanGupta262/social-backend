@@ -1,4 +1,6 @@
 const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
 const port = process.env.PORT || 8000;
 
 const app = express();
@@ -14,6 +16,8 @@ const facebookStrategy = require('./config/passport-facebook-strategy');
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
+app.use(helmet());
+app.use(cors());
 
 
 app.use(passport.initialize());

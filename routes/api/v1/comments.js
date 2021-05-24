@@ -6,5 +6,6 @@ const commentController = require('../../../controllers/api/v1/comments_controll
 
 router.post('/create', passport.authenticate('jwt', { session: false }), commentController.create);
 router.delete('/:id/delete', passport.authenticate('jwt', { session: false }), commentController.delete);
+router.post('/:id/like', passport.authenticate('jwt', { session: false }), commentController.toggleLike);
 
 module.exports = router;

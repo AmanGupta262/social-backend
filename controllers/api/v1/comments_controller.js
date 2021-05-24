@@ -62,3 +62,38 @@ module.exports.delete = async (req, res) => {
         });
     }
 };
+module.exports.toggleLike = async (req, res) => {
+    try {
+        const comment = await Comment.findById(req.params.id);
+
+        if (!comment)
+            return res.status(404).json({
+                message: "Comment not found",
+            });
+        const user = req.user;
+        const isPresent = comment.likes.includes(user._id);
+
+        if (!isPresent) {
+            comment.likes.push(user._id);
+        }
+        else {
+            comment.likes.pull(user._id);
+        }
+        await comment.save();
+
+        return res.status(200).json({
+            message: isPresent ? "Unliked Comment" : "Liked Comment",
+            data: {
+                post,
+                liked: !isPresent
+            }
+        });
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}
