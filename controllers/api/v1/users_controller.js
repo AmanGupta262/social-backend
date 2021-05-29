@@ -227,6 +227,7 @@ module.exports.sendMail = async (req, res) => {
         });
     }
 }
+
 module.exports.resetPassword = async (req, res) => {
     try {
         const token = req.body.token;
@@ -245,9 +246,7 @@ module.exports.resetPassword = async (req, res) => {
                 message: 'Invalid Token'
             });
         if (user.expireToken > Date.now()) {
-            const salt = await bcrypt.genSalt(10);
-
-            user.password = await bcrypt.hash(password, salt);
+            user.password = await bcrypt.hash(password, 10);
             user.resetToken = '';
             user.expireToken = Date.now();
             user.save();
@@ -272,3 +271,30 @@ module.exports.resetPassword = async (req, res) => {
         });
     }
 };
+
+module.exports.getFriends = async (req, res) => {
+    try {
+        const user = await User.findOne({_id: req.params.id});
+
+        if(!user)
+            return res.status(404).json({
+                message: 'User does not exists'
+            });
+
+        const friends = await Friendship.find({$or: [{to_user: user.id}, {from_user: user.id}], status: '1' });
+
+        return res.status(200).json({
+            message: "All friends",
+            data: {
+                friends
+            }
+        })
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}

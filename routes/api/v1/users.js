@@ -4,7 +4,7 @@ const passport = require('passport');
 
 const userController = require('../../../controllers/api/v1/users_controller');
 
-router.get('/', userController.getUsers);
+router.get('/', passport.authenticate('jwt', { session: false }), userController.getUsers);
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 
@@ -24,5 +24,7 @@ router.get('/:id', passport.authenticate('jwt', { session: false }), userControl
 
 router.post('/send/token', userController.sendMail);
 router.post('/change/password', userController.resetPassword);
+
+router.get('/:id/friends', passport.authenticate('jwt', { session: false }), userController.getFriends);
 
 module.exports = router;
