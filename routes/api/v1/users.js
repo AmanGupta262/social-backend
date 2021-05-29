@@ -4,6 +4,7 @@ const passport = require('passport');
 
 const userController = require('../../../controllers/api/v1/users_controller');
 
+router.get('/', userController.getUsers);
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 
