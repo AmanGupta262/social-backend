@@ -2,7 +2,7 @@ const nodemailer = require('../config/nodemailer');
 
 exports.reset = (user) => {
     console.log("Inside forgot password mailer");
-    nodemailer.transporter.sendMail({
+    nodemailer.sendMail({
         to: user.email,
         from: 'no-reply@social.com',
         subject: "Password Reset Request",

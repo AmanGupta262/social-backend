@@ -1,9 +1,6 @@
 
 const nodemailer = require('nodemailer');
-const ejs = require('ejs');
-const path = require('path');
 require('dotenv').config();
-const env = require('./environment');
 
 
 let transporter = nodemailer.createTransport({

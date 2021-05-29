@@ -1,10 +1,12 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const User = require('../../../models/user');
 const Post = require('../../../models/post');
 const Article = require('../../../models/article');
 const Friendship = require('../../../models/friendship');
+const resetPasswordMailer = require('../../../mailers/forgot_password');
 
 module.exports.register = async (req, res) => {
     try {
@@ -178,3 +180,30 @@ module.exports.profile = async (req, res) => {
         });
     }
 };
+
+module.exports.sendMail = async (req, res) => {
+    try {
+        const user = await User.findOne({email: req.body.email});
+        if (!user)
+            return res.status(404).json({
+                message: 'User not found'
+            });
+
+        const token = crypto.randomBytes(32).toString('hex');
+        user.resetToken = token;
+        await user.save();
+
+        resetPasswordMailer.reset(user);
+
+        return res.status(200).json({
+            message: 'Email Sent'
+        });
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+}
