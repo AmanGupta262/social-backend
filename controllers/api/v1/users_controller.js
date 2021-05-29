@@ -155,9 +155,9 @@ module.exports.profile = async (req, res) => {
 
         const owner = req.user.id === user.id;
         const posts = await Post.find({ user: user._id })
-                                .populate({ path: 'likes', select: 'name' })
-                                .limit(5)
-                                .sort({ 'createdAt': 'desc' });
+            .populate({ path: 'likes', select: 'name' })
+            .limit(5)
+            .sort({ 'createdAt': 'desc' });
         const requests = await Friendship.find({
             to_user: user._id,
             status: '0'
@@ -183,7 +183,7 @@ module.exports.profile = async (req, res) => {
 
 module.exports.sendMail = async (req, res) => {
     try {
-        const user = await User.findOne({email: req.body.email});
+        const user = await User.findOne({ email: req.body.email });
         if (!user)
             return res.status(404).json({
                 message: 'User not found'
@@ -191,6 +191,7 @@ module.exports.sendMail = async (req, res) => {
 
         const token = crypto.randomBytes(32).toString('hex');
         user.resetToken = token;
+        user.expireToken = Date.now() + 120000;
         await user.save();
 
         resetPasswordMailer.reset(user);
@@ -207,3 +208,48 @@ module.exports.sendMail = async (req, res) => {
         });
     }
 }
+module.exports.resetPassword = async (req, res) => {
+    try {
+        const token = req.body.token;
+        const password = req.body.password;
+        const confirmPassword = req.body.confirm_password;
+
+        if (password != confirmPassword || token.length < 32) {
+            res.status(400).json({
+                message: "Enter same password"
+            })
+        }
+
+        const user = await User.findOne({ resetToken: token });
+        if (!user)
+            return res.status(404).json({
+                message: 'Invalid Token'
+            });
+        if (user.expireToken > Date.now()) {
+            const salt = await bcrypt.genSalt(10);
+
+            user.password = await bcrypt.hash(password, salt);
+            user.resetToken = '';
+            user.expireToken = Date.now();
+            user.save();
+
+            return res.status(200).json({
+                message: 'Password changed successfully'
+            });
+        }
+        user.resetToken = '';
+        user.expireToken = Date.now();
+        user.save();
+
+        return res.status(400).json({
+            message: 'Token is Expired'
+        });       
+
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+};
