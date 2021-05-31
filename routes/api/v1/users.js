@@ -22,7 +22,7 @@ router.get('/:id/articles', passport.authenticate('jwt', {session: false}), user
 
 router.get('/:id', passport.authenticate('jwt', { session: false }), userController.profile);
 
-router.post('/send/token', userController.sendMail);
+router.post('/forgot/password', userController.sendMail);
 router.post('/change/password', userController.resetPassword);
 
 router.get('/:id/friends', passport.authenticate('jwt', { session: false }), userController.getFriends);
