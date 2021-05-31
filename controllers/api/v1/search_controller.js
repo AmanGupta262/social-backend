@@ -9,10 +9,29 @@ module.exports.search = async (req, res) => {
         const articles = await Article.find({ content: { $regex: query, $options: 'i' } },);
 
         res.status(200).json({
-            message: 'Posts and Articles',
+            message: 'Search Result',
             data: {
                 posts,
                 articles
+            }
+        });
+    } catch (error) {
+        console.log("Error: ", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error
+        });
+    }
+};
+module.exports.searchUser = async (req, res) => {
+    try {
+        const query = req.query.query;
+        const users = await User.find({ name: { $regex: query, $options: 'i' } }).select('name email');
+
+        res.status(200).json({
+            message: 'Search Result',
+            data: {
+                users
             }
         });
     } catch (error) {
