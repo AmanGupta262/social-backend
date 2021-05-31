@@ -4,7 +4,8 @@ const router = express.Router();
 
 const searchController = require('../../../controllers/api/v1/search_controller');
 
-router.get('/', passport.authenticate('jwt', { session: false }), searchController.search);
+router.get('/posts/', passport.authenticate('jwt', { session: false }), searchController.searchPost);
+router.get('/articles/', passport.authenticate('jwt', { session: false }), searchController.searchArticle);
 router.get('/users/', passport.authenticate('jwt', { session: false }), searchController.searchUser);
 
 
