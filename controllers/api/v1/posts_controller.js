@@ -19,7 +19,12 @@ module.exports.getAllPosts = async (req, res) => {
             options: {
                 limit: 1
             }
+        })
+        .populate({
+            path: 'user',
+            select: 'name email'
         });
+        
         res.status(200).json({
             success: true,
             message: "All Posts",
