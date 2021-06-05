@@ -21,6 +21,7 @@ module.exports.getAllPosts = async (req, res) => {
             }
         });
         res.status(200).json({
+            success: true,
             message: "All Posts",
             data: {
                 posts
@@ -30,6 +31,7 @@ module.exports.getAllPosts = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -44,6 +46,7 @@ module.exports.create = async (req, res) => {
         const post = await Post.create(req.body);
 
         return res.status(200).json({
+            success: true,
             message: "Post Created",
             data: {
                 post
@@ -52,6 +55,7 @@ module.exports.create = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -63,6 +67,7 @@ module.exports.toggleLike = async (req, res) => {
 
         if (!post)
             return res.status(404).json({
+                success: false,
                 message: "Post not found",
             });
         const user = req.user;
@@ -77,6 +82,7 @@ module.exports.toggleLike = async (req, res) => {
         await post.save();
 
         return res.status(200).json({
+            success: true,
             message: isPresent ? "Unliked Post" : "Liked Post",
             data: {
                 post,
@@ -87,6 +93,7 @@ module.exports.toggleLike = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -108,6 +115,7 @@ module.exports.showPost = async (req, res) => {
                 }
             });
         res.status(200).json({
+            success: true,
             message: "Post Detail",
             data: {
                 post
@@ -117,6 +125,7 @@ module.exports.showPost = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -127,21 +136,25 @@ module.exports.update = async (req, res) => {
         const post = await Post.findById(req.params.id);
         if (!post)
             return res.status(404).json({
+                success: false,
                 message: "Post not found"
             });
         if (req.user.id != post.user)
             return res.status(403).json({
+                success: false,
                 message: "You can edit only your posts"
             });
         await post.updateOne({ $set: req.body });
 
         return res.status(200).json({
+            success: true,
             message: "Post updated successfully"
         });
 
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -152,22 +165,26 @@ module.exports.delete = async (req, res) => {
         const post = await Post.findById(req.params.id);
         if (!post)
             return res.status(404).json({
+                success: false,
                 message: "Post not found"
             });
         if (req.user.id != post.user)
             return res.status(403).json({
+                success: false,
                 message: "You can delete only your posts"
             });
         let comments = await Comment.deleteMany({ post: req.params.id });
         await post.deleteOne();
 
         return res.status(200).json({
+            success: true,
             message: "Post deleted"
         });
 
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });

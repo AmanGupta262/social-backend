@@ -7,6 +7,7 @@ module.exports.create = async (req, res) => {
 
         if (!post) {
             return res.status(404).json({
+                success: false,
                 message: "Post not found"
             });
         }
@@ -21,6 +22,7 @@ module.exports.create = async (req, res) => {
         await post.save();
 
         return res.status(200).json({
+            success: true,
             message: "Comment added successfully",
             data: {
                 comment
@@ -29,6 +31,7 @@ module.exports.create = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -40,23 +43,27 @@ module.exports.delete = async (req, res) => {
 
         if (!comment) {
             return res.status(404).json({
+                success: false,
                 message: "Comment not found"
             });
         }
 
         if(req.user.id != comment.user || req.user.id != comment.post.user)
             return res.status(403).json({
+                success: false,
                 message: 'You are not authorized to delete this comment'
             });
         await Post.findByIdAndUpdate(comment.post, {$pull: {comments: comment.id}});
         await comment.deleteOne();
 
         return res.status(200).json({
+            success: true,
             message: "Comment deleted",
         });
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -68,6 +75,7 @@ module.exports.toggleLike = async (req, res) => {
 
         if (!comment)
             return res.status(404).json({
+                success: false,
                 message: "Comment not found",
             });
         const user = req.user;
@@ -82,6 +90,7 @@ module.exports.toggleLike = async (req, res) => {
         await comment.save();
 
         return res.status(200).json({
+            success: true,
             message: isPresent ? "Unliked Comment" : "Liked Comment",
             data: {
                 post,
@@ -92,6 +101,7 @@ module.exports.toggleLike = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });

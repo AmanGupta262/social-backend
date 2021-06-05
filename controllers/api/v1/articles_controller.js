@@ -13,6 +13,7 @@ module.exports.getAllArticles = async (req, res) => {
                 select: 'name',
             });
         res.status(200).json({
+            success: true,
             message: "All Articles",
             data: {
                 articles
@@ -22,6 +23,7 @@ module.exports.getAllArticles = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -35,6 +37,7 @@ module.exports.create = async (req, res) => {
         const article = await Article.create(req.body);
 
         return res.status(200).json({
+            success: true,
             message: "Article Created",
             data: {
                 article
@@ -43,6 +46,7 @@ module.exports.create = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -54,6 +58,7 @@ module.exports.toggleUpvote = async (req, res) => {
 
         if (!article)
             return res.status(404).json({
+                success: false,
                 message: "Article not found",
             });
         const user = req.user;
@@ -73,6 +78,7 @@ module.exports.toggleUpvote = async (req, res) => {
         await article.save();
 
         return res.status(200).json({
+            success: true,
             message: isUpvoted ? "Unupvoted Article" : "Upvoted Article",
             data: {
                 article,
@@ -83,6 +89,7 @@ module.exports.toggleUpvote = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -94,6 +101,7 @@ module.exports.toggleDownvote = async (req, res) => {
 
         if (!article)
             return res.status(404).json({
+                success: false,
                 message: "Article not found",
             });
         const user = req.user;
@@ -114,6 +122,7 @@ module.exports.toggleDownvote = async (req, res) => {
         await article.save();
 
         return res.status(200).json({
+            success: true,
             message: isDownVoted ? "voted Article" : "Downvoted Article",
             data: {
                 article,
@@ -124,6 +133,7 @@ module.exports.toggleDownvote = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -143,16 +153,19 @@ module.exports.showArticle = async (req, res) => {
 
         if(!article)
             return res.status(404).json({
+                success: false,
                 message: "Article not found"
             });
 
         return res.status(200).json({
+            success: true,
             article
         });
         
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -163,21 +176,25 @@ module.exports.update = async (req, res) => {
         const article = await Article.findById(req.params.id);
         if(!article)
             return res.status(404).json({
+                success: false,
                 message: "Article not found"
             });
         if(req.user.id != article.user)
             return res.status(403).json({
+                success: false,
                 message: "You can edit only your articles"
             });
         await article.updateOne({$set: req.body});
 
         return res.status(200).json({
+            success: true,
             message: "Article updated successfully"
         });
 
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -188,21 +205,25 @@ module.exports.delete = async (req, res) => {
         const article = await Article.findById(req.params.id);
         if (!article)
             return res.status(404).json({
+                success: false,
                 message: "Article not found"
             });
         if (req.user.id != article.user)
             return res.status(403).json({
+                success: false,
                 message: "You can delete only your articles"
             });
         await article.deleteOne();
 
         return res.status(200).json({
+            success: true,
             message: "Article deleted"
         });
 
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });

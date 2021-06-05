@@ -8,6 +8,7 @@ module.exports.add = async (req, res) => {
         
         if(!toUser)
             return res.status(404).json({
+                success: false,
                 message: 'User not found'
             })
 
@@ -23,6 +24,7 @@ module.exports.add = async (req, res) => {
         await fromUser.save();
 
         return res.status(200).json({
+            success: true,
             message: "Request sent",
             data: {
                 friendship: newFriendship
@@ -32,6 +34,7 @@ module.exports.add = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -43,10 +46,12 @@ module.exports.accept = async (req, res) => {
         const friendship = await Friendship.findOne({_id: req.params.id}).populate('from_user', 'name');
         if(!friendship)
             return res.status(404).json({
+                success: false,
                 message: 'Friend request not found'
             });
         if(req.user.id != friendship.to_user)
             return res.status(403).json({
+                success: false,
                 message: 'You are not authorized to accept this request'
             });
 
@@ -55,6 +60,7 @@ module.exports.accept = async (req, res) => {
         
 
         return res.status(200).json({
+            success: true,
             message: `${friendship.from_user.name} is your friend now`,
             friendship
         });
@@ -62,6 +68,7 @@ module.exports.accept = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -73,11 +80,13 @@ module.exports.remove = async (req, res) => {
         const friendship = await Friendship.findOne({ _id: req.params.id }).populate('from_user', 'name');
         if (!friendship)
             return res.status(404).json({
+                success: false,
                 message: 'Friend request not found'
             });
 
         if (req.user.id != friendship.to_user)
             return res.status(403).json({
+                success: false,
                 message: 'You are not authorized to do this'
             });
         const otherUsername = friendship.from_user.name;
@@ -88,12 +97,14 @@ module.exports.remove = async (req, res) => {
         
         
         return res.status(200).json({
+            success: true,
             message: `You are no longer friend with ${otherUsername}`
         });
 
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });

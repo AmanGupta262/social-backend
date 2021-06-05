@@ -6,8 +6,15 @@ module.exports.searchPost = async (req, res) => {
     try {
         const query = req.query.query;
         const posts = await Post.find({ content: { $regex: query, $options: 'i' } },);
+        if(!posts){
+            return res.status(200).json({
+                success: false,
+                message: 'No posts found'
+            })
+        }
 
-        res.status(200).json({
+        return res.status(200).json({
+            success: true,
             message: 'Search Result',
             data: {
                 posts
@@ -16,6 +23,7 @@ module.exports.searchPost = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -27,6 +35,7 @@ module.exports.searchArticle = async (req, res) => {
         const articles = await Article.find({ content: { $regex: query, $options: 'i' } },);
 
         res.status(200).json({
+            success: true,
             message: 'Search Result',
             data: {
                 articles
@@ -35,6 +44,7 @@ module.exports.searchArticle = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });
@@ -46,6 +56,7 @@ module.exports.searchUser = async (req, res) => {
         const users = await User.find({ name: { $regex: query, $options: 'i' } }).select('name email');
 
         res.status(200).json({
+            success: true,
             message: 'Search Result',
             data: {
                 users
@@ -54,6 +65,7 @@ module.exports.searchUser = async (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
         return res.status(500).json({
+            success: false,
             message: "Internal Server Error",
             error
         });

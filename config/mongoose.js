@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGO_DB, {
+mongoose.connect('mongodb://localhost/social', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
