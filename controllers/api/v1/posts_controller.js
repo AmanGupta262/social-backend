@@ -5,19 +5,20 @@ const Comment = require('../../../models/comment');
 module.exports.getAllPosts = async (req, res) => {
     try {
         const posts = await Post.find()
+        .sort("-createdAt")
         .populate({
             path: 'likes',
             select: 'name'
         })
         .populate({
+            options:{
+                sort: "-createdAt",
+            },
             path: 'comments',
             select: 'content user createdAt',
             populate: {
                 path: 'user',
                 select: 'name'
-            },
-            options: {
-                limit: 1
             }
         })
         .populate({
