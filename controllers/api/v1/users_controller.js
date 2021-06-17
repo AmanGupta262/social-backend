@@ -193,9 +193,8 @@ module.exports.profile = async (req, res) => {
 
         const owner = req.user.id === user.id;
         const posts = await Post.find({ user: user._id })
-            .populate({ path: 'likes', select: 'name' })
-            .limit(5)
             .sort({ 'createdAt': 'desc' });
+        const articles = await Article.find({ user: user._id }).sort("-createdAt");
         const requests = await Friendship.find({
             to_user: user._id,
             status: '0'
@@ -205,6 +204,7 @@ module.exports.profile = async (req, res) => {
             data: {
                 user,
                 posts,
+                articles,
                 owner,
                 requests
             }
