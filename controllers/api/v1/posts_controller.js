@@ -13,6 +13,7 @@ module.exports.getAllPosts = async (req, res) => {
         .populate({
             options:{
                 sort: "-createdAt",
+                limit: 1
             },
             path: 'comments',
             select: 'content user createdAt',
