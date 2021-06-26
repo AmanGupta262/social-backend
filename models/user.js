@@ -26,6 +26,12 @@ const userSchema = new mongoose.Schema({
             ref: 'Friendship'
         }
     ],
+    requests: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Friendship'
+        }
+    ],
     resetToken: {
         type: String,
     },

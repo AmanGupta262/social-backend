@@ -17,8 +17,8 @@ module.exports.add = async (req, res) => {
             from_user: fromUser._id
         });
 
-        toUser.friends.push(newFriendship);
-        fromUser.friends.push(newFriendship);
+        toUser.requests.push(newFriendship);
+        fromUser.requests.push(newFriendship);
 
         await toUser.save();
         await fromUser.save();
@@ -57,7 +57,18 @@ module.exports.accept = async (req, res) => {
 
         friendship.status = '1';
         await friendship.save();
-        
+
+        const fromUser = await User.findOne({ _id: friendship.from_user._id });
+        const toUser = await User.findOne({ _id: friendship.to_user });
+
+        fromUser.requests.splice(fromUser.requests.indexOf(req.params.id), 1);
+        toUser.requests.splice(toUser.requests.indexOf(req.params.id), 1);
+
+        fromUser.friends.push(friendship);
+        toUser.friends.push(friendship);
+
+        await toUser.save();
+        await fromUser.save();        
 
         return res.status(200).json({
             success: true,
@@ -83,8 +94,7 @@ module.exports.remove = async (req, res) => {
                 success: false,
                 message: 'Friend request not found'
             });
-
-        if (req.user.id != friendship.to_user)
+        if (req.user.id != friendship.to_user && req.user.id != friendship.from_user._id)
             return res.status(403).json({
                 success: false,
                 message: 'You are not authorized to do this'
