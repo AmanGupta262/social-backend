@@ -86,18 +86,19 @@ module.exports.login = async (req, res) => {
                 name: user.name,
                 _id: user._id,
                 email: user.email,
+                friends: user.friends,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             },
             'secret',
-            { expiresIn: '10m' }
+            { expiresIn: '1d' }
         );
         return res.status(200).json({
             success: true,
             message: "Login Successful",
             data: {
                 token: "Bearer " + token,
-                user
+                user,
             }
         });
     } catch (error) {
