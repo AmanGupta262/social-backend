@@ -65,7 +65,7 @@ module.exports.register = async (req, res) => {
 module.exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email: email });
+        const user = await User.findOne({ email: email }).populate('friends');
 
         if (!user) {
             return res.status(404).json({
@@ -90,7 +90,7 @@ module.exports.login = async (req, res) => {
                 updatedAt: user.updatedAt
             },
             'secret',
-            { expiresIn: '1d' }
+            { expiresIn: '10m' }
         );
         return res.status(200).json({
             success: true,
@@ -116,7 +116,7 @@ module.exports.createSession = async (req, res) => {
         success: true,
         message: "Login Successful",
         data: {
-            token: "Bearer " + jwt.sign(req.user.toJSON(), 'secret', { expiresIn: '1d' })
+            token: "Bearer " + jwt.sign(req.user.toJSON(), 'secret', { expiresIn: '10m' })
         }
     });
 };
