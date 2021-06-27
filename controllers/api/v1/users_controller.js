@@ -185,7 +185,28 @@ module.exports.getArticles = async (req, res) => {
 
 module.exports.profile = async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.params.id }).select('-password').populate('friends');
+        const user = await User.findOne({ _id: req.params.id })
+          .select("-password")
+          .populate({
+            options: {
+              sort: "-createdAt",
+            },
+            path: "friends",
+            populate: {
+              path: "to_user from_user ",
+              select: "name",
+            },
+          })
+          .populate({
+            options: {
+              sort: "-createdAt",
+            },
+            path: "requests",
+            populate: {
+              path: "to_user from_user ",
+              select: "name",
+            },
+          });
 
         if (!user)
             return res.status(404).json({
@@ -194,12 +215,23 @@ module.exports.profile = async (req, res) => {
 
         const owner = req.user.id === user.id;
         const posts = await Post.find({ user: user._id })
-            .sort({ 'createdAt': 'desc' });
+          .sort("-createdAt")
+          .populate({
+            options: {
+              sort: "-createdAt",
+            },
+            path: "comments",
+            select: "content user createdAt",
+            populate: {
+              path: "user",
+              select: "name",
+            },
+          })
+          .populate({
+            path: "user",
+            select: "name email",
+          });
         const articles = await Article.find({ user: user._id }).sort("-createdAt");
-        const requests = await Friendship.find({
-            to_user: user._id,
-            status: '0'
-        });
         return res.status(200).json({
             message: 'User Profile',
             data: {
@@ -207,7 +239,6 @@ module.exports.profile = async (req, res) => {
                 posts,
                 articles,
                 owner,
-                requests
             }
         });
 
