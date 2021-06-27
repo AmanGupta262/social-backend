@@ -228,6 +228,10 @@ module.exports.profile = async (req, res) => {
             },
           })
           .populate({
+            path: "likes",
+            select: "name",
+          })
+          .populate({
             path: "user",
             select: "name email",
           });
