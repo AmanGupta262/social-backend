@@ -110,6 +110,10 @@ module.exports.showPost = async (req, res) => {
         select: "name",
       })
       .populate({
+        path: "user",
+        select: "name"
+      })
+      .populate({
         options: {
           sort: "-createdAt",
         },
