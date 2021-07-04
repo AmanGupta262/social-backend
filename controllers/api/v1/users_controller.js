@@ -65,7 +65,18 @@ module.exports.register = async (req, res) => {
 module.exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email: email }).populate('friends');
+        const user = await User.findOne({ email: email })
+        .populate('friends')
+        .populate({
+            options: {
+                sort: "-createdAt",
+            },
+            path: "requests",
+            populate: {
+                path: "to_user from_user ",
+                select: "name",
+            },
+        });
 
         if (!user) {
             return res.status(404).json({
@@ -87,6 +98,7 @@ module.exports.login = async (req, res) => {
                 _id: user._id,
                 email: user.email,
                 friends: user.friends,
+                requests: user.requests,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             },
