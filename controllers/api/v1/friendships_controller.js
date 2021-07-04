@@ -11,7 +11,16 @@ module.exports.add = async (req, res) => {
                 success: false,
                 message: 'User not found'
             })
-
+        const friend  = await Friendship.findOne({from_user: fromUser._id, to_user: toUser._id});
+        if(friend){
+            return res.status(200).json({
+                success: true,
+                message: "Request sent",
+                data: {
+                    friendship: friend
+                }
+            });
+        }
         const newFriendship = await Friendship.create({
             to_user: toUser._id,
             from_user: fromUser._id
